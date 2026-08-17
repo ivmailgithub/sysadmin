@@ -1,0 +1,20 @@
+I'll build this as a full working Rainmeter skin — an INI file plus a small PowerShell helper script that does the actual IP/port detection (Rainmeter itself can't probe sockets natively). Let me set it up properly.Here's a working Rainmeter skin, zipped up. Unzip into `Documents\Rainmeter\Skins\NetworkMonitor\` and load `Network.ini`.
+
+**How it's built:**
+- `Network.ini` — the skin itself. Runs a script on a timer (RunCommand plugin), parses its output (WebParser plugin), and displays it.
+- `@Resources\Scripts\GetNetworkStatus.ps1` — a small PowerShell helper that Rainmeter can't do natively: it lists all local IPv4 addresses and does a fast 200ms TCP probe against each port, writing results to a plain `KEY=VALUE` file.
+- `README.txt` — install steps and how to customize.
+
+**Out of the box it checks:** 3000, 4200, 5000, 5001, 5432, 8000, 8080, 8888, 9000 — open ports show green, closed show red, refreshing every 15s (or click "Click to refresh now").
+
+To add/remove ports: edit the `$ports` array in the `.ps1` file, then copy/paste one of the `MeasurePortXXXX` + `MeterPortXXXX...` blocks in the ini and swap the number — the pattern's the same for every port so it's easy to extend for whatever your `server.py` apps are actually using.
+
+
+add port names ... bunch of server.py flask apps running
+
+Good idea — let's do both: static friendly names live in the ini (easy to edit), and the script also detects the actual process name listening on each open port (so you can tell *which* `server.py` is answering). Let me update both files.Now the ini: add friendly-name variables and wire in the detected process name.Now let's add a proc-name measure for each port and update the meters to show it.Given the labels are longer now, let's rework the ports layout into a single clean column (was two columns) and wire in the process names, then widen the window slightly.Now let's view the meters section to rewrite it cleanly.Now replacing the whole meters block (lines 306 to end) with a cleaner single-column layout that includes labels and process names.Now merge head + meters into the final ini file, and fix the "process name" formatting note in the label spacing (extra readability).Let's do a quick sanity check that measures reference the right variables and there are no duplicate section names.No duplicates. Now update the README to mention the new labeling feature, then repackage.Updated. Two labeling layers now, matching your "either/both" ask:
+
+1. **Static friendly names in the ini** — `[Variables]` has `Port5000Name=Flask`, `Port8888Name=Jupyter`, etc. Purely cosmetic, edit anytime, no rescan.
+2. **Live process detection via PowerShell** — when a port is open, `GetNetworkStatus.ps1` now uses `Get-NetTCPConnection` + `Get-Process` to find *which* process is actually bound to that port, and appends it to the status, e.g. `OPEN . python` or `OPEN . node`. So you can tell your Flask dev server on 5000 apart from something else squatting on it, without touching the ini.
+
+Each port row now reads like: `5000  Flask` on the left, `OPEN . python` right-aligned in green (or `CLOSED` in red with nothing after it). I also switched from the two-column layout to a single vertical column since the labels made rows too wide, and grew the window/background to fit.
