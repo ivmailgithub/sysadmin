@@ -1,0 +1,26 @@
+# ==============================================================================
+# Wyze Multi-Camera Viewer & Local NVR Event Recording Requirements
+# ==============================================================================
+
+# Core Wyze Viewer & Streaming Server (wyze_server.py / wyze_server_v2.py)
+flask>=3.0.0
+opencv-python>=4.8.0
+numpy>=1.26.0
+PyYAML>=6.0
+
+# Network, WebSockets & Client Utilities
+requests>=2.31.0
+websocket-client>=1.6.0
+
+# Data Analysis & Observational Tools (server.py & telescope suite)
+pandas>=2.0.0
+
+# Optional Astronomy & Image Processing Extensions
+# (Uncomment if using satellite_tracker.py, sky_analyzer.py, or dwarflab tools)
+# pillow>=10.0.0
+# scipy>=1.11.0
+# skyfield>=1.46
+
+# NOTE: The following modules are part of the Python Standard Library
+# and must NOT be installed via pip (built-in to Python 3.10+):
+# - argparse, logging, pathlib, typing, json, urllib (urllib.parse)
